@@ -27,26 +27,28 @@ namespace ApiJWT.Controllers
             _authenticationServices = authenticationServices;
         }
 
-    // GET api/values
-    [HttpGet]
+        // GET api/values
+        [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
         [HttpGet("triggerfunctionapp")]
-        public async void TriggerFunctionApp()
+        public async Task<string> TriggerFunctionApp()
         {
             var client = new HttpClient();
             string url = $"{_appSettings.FunctionDomain}FunctionUser?name=userData";
             var result = await client.GetAsync(url);
-            if(result.StatusCode == HttpStatusCode.OK)
+            if (result.StatusCode == HttpStatusCode.OK)
             {
                 string jsonResult = result?.Content.ReadAsStringAsync().Result;
                 // var json = JsonConvert.DeserializeObject(jsonResult);
                 var users = JsonConvert.DeserializeObject<List<User>>(jsonResult);
                 _authenticationServices.AddUser(users);
+                return "Success trigger function app";
             }
+            return "Fail trigger function app";
         }
 
         // POST api/values
