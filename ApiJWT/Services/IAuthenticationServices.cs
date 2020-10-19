@@ -11,5 +11,6 @@ namespace ApiJWT.Services
         AuthenticateResponse Authenticate(AuthenticateRequest model);
         IEnumerable<User> GetAll();
         User GetById(int id);
+        void AddUser(List<User> users);
     }
 }

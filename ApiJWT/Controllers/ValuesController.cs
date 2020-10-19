@@ -1,8 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using ApiJWT.Helpers;
+using ApiJWT.Models;
+using ApiJWT.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace ApiJWT.Controllers
 {
@@ -10,18 +18,35 @@ namespace ApiJWT.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        // GET api/values
-        [HttpGet]
+        private readonly AppSettings _appSettings;
+        private readonly IAuthenticationServices _authenticationServices;
+
+        public ValuesController(IOptions<AppSettings> appSettings, IAuthenticationServices authenticationServices)
+        {
+            _appSettings = appSettings.Value;
+            _authenticationServices = authenticationServices;
+        }
+
+    // GET api/values
+    [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [HttpGet("triggerfunctionapp")]
+        public async void TriggerFunctionApp()
         {
-            return "value";
+            var client = new HttpClient();
+            string url = $"{_appSettings.FunctionDomain}FunctionUser?name=userData";
+            var result = await client.GetAsync(url);
+            if(result.StatusCode == HttpStatusCode.OK)
+            {
+                string jsonResult = result?.Content.ReadAsStringAsync().Result;
+                // var json = JsonConvert.DeserializeObject(jsonResult);
+                var users = JsonConvert.DeserializeObject<List<User>>(jsonResult);
+                _authenticationServices.AddUser(users);
+            }
         }
 
         // POST api/values

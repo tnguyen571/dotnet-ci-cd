@@ -33,7 +33,7 @@ namespace ApiJWT
             services.AddScoped<CustomAuthorizeFilter>();
 
             // configure DI for application services
-            services.AddScoped<IAuthenticationServices, AuthenticationServices>();
+            services.AddSingleton<IAuthenticationServices, AuthenticationServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

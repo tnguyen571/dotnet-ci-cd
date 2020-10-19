@@ -15,16 +15,17 @@ namespace ApiJWT.Services
     public class AuthenticationServices : IAuthenticationServices
     {
         // users hardcoded for simplicity, store in a db with hashed passwords in production applications
-        private List<User> _users = new List<User>
-        {
-            new User { Id = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test" }
-        };
+        private List<User> _users;
 
         private readonly AppSettings _appSettings;
 
         public AuthenticationServices(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings.Value;
+            _users = new List<User>
+            {
+                new User { Id = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test" }
+            };
         }
 
 
@@ -66,6 +67,18 @@ namespace ApiJWT.Services
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public void AddUser(List<User> users)
+        {
+           foreach(var item in users)
+           {
+                bool check = _users.Any(x => x.Id == item.Id);
+                if (!check)
+                {
+                    _users.Add(item);
+                }
+           }
         }
     }
 }
