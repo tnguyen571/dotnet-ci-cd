@@ -37,16 +37,23 @@ namespace ApiJWT.Controllers
         [HttpGet("triggerfunctionapp")]
         public async Task<string> TriggerFunctionApp()
         {
-            var client = new HttpClient();
-            string url = $"{_appSettings.FunctionDomain}FunctionUser?name=userData";
-            var result = await client.GetAsync(url);
-            if (result.StatusCode == HttpStatusCode.OK)
+            try
             {
-                string jsonResult = result?.Content.ReadAsStringAsync().Result;
-                // var json = JsonConvert.DeserializeObject(jsonResult);
-                var users = JsonConvert.DeserializeObject<List<User>>(jsonResult);
-                _authenticationServices.AddUser(users);
-                return "Success trigger function app";
+                var client = new HttpClient();
+                string url = $"{_appSettings.FunctionDomain}FunctionUser?name=userData";
+                var result = await client.GetAsync(url);
+                if (result.StatusCode == HttpStatusCode.OK)
+                {
+                    string jsonResult = result?.Content.ReadAsStringAsync().Result;
+                    // var json = JsonConvert.DeserializeObject(jsonResult);
+                    var users = JsonConvert.DeserializeObject<List<User>>(jsonResult);
+                    _authenticationServices.AddUser(users);
+                    return "Success trigger function app";
+                }
+            }
+            catch(Exception ex)
+            {
+                return ex?.Message;
             }
             return "Fail trigger function app";
         }
