@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1267
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiJWT", "ApiJWT\ApiJWT.csproj", "{A1795B03-4339-4196-A595-747F48020EAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBus", "ServiceBus\ServiceBus.csproj", "{B05F6B8D-3488-4274-BE6B-E4FF30BD24AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A1795B03-4339-4196-A595-747F48020EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1795B03-4339-4196-A595-747F48020EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1795B03-4339-4196-A595-747F48020EAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B05F6B8D-3488-4274-BE6B-E4FF30BD24AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B05F6B8D-3488-4274-BE6B-E4FF30BD24AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B05F6B8D-3488-4274-BE6B-E4FF30BD24AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B05F6B8D-3488-4274-BE6B-E4FF30BD24AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

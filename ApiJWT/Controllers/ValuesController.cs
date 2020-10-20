@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using ApiJWT.Helpers;
 using ApiJWT.Models;
@@ -11,8 +12,10 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -24,11 +27,15 @@ namespace ApiJWT.Controllers
     {
         private readonly AppSettings _appSettings;
         private readonly IAuthenticationServices _authenticationServices;
+        private readonly ILogger _logger;
+        private static IQueueClient _queueClient;
 
-        public ValuesController(IOptions<AppSettings> appSettings, IAuthenticationServices authenticationServices)
+        public ValuesController(IOptions<AppSettings> appSettings, IAuthenticationServices authenticationServices, ILogger<ValuesController> logger)
         {
             _appSettings = appSettings.Value;
             _authenticationServices = authenticationServices;
+            _logger = logger;
+            _queueClient = new QueueClient(_appSettings.ServiceBusConnectionString, _appSettings.QueueName);
         }
 
         // GET api/values
@@ -65,9 +72,20 @@ namespace ApiJWT.Controllers
         }
 
         // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet("triggerservicesbus/{message}")]
+        public async Task<string> TriggerFunctionAppServiceBus(string message)
         {
+            try
+            {
+                DateTime dateTime = DateTime.Now;
+                string messageBody = $"{message} at {dateTime.ToString()}";
+                await SendMessagesAsync(messageBody);
+                return $"Success trigger message {messageBody}";
+            }
+            catch (Exception ex)
+            {
+                return ex?.Message;
+            }
         }
 
         // PUT api/values/5
@@ -80,6 +98,24 @@ namespace ApiJWT.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        private async Task SendMessagesAsync(string messageBody)
+        {
+            try
+            {
+                var message = new Message(Encoding.UTF8.GetBytes(messageBody));
+
+                // Write the body of the message to the console.
+                _logger.LogInformation($"Sending message: {messageBody}");
+
+                // Send the message to the queue.
+                await _queueClient.SendAsync(message);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"{DateTime.Now} :: Exception: {exception.Message}");
+            }
         }
     }
 }
