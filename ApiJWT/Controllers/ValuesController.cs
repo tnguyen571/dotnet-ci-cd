@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 using ApiJWT.Helpers;
 using ApiJWT.Models;
 using ApiJWT.Services;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -41,6 +45,8 @@ namespace ApiJWT.Controllers
             {
                 var client = new HttpClient();
                 string url = $"{_appSettings.FunctionDomain}FunctionUser?name=userData";
+                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "dd26e2ab8642475095f0c61383fc00d0");
+                client.DefaultRequestHeaders.Add("Ocp-Apim-Trace", "true");
                 var result = await client.GetAsync(url);
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
@@ -51,7 +57,7 @@ namespace ApiJWT.Controllers
                     return "Success trigger function app";
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex?.Message;
             }
